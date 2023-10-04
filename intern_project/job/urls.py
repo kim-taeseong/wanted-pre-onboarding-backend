@@ -2,6 +2,6 @@ from django.urls import path
 
 from . import views
 urlpatterns = [
-    path('job/', views.job, name='job'),
+    path('job/', views.create_job, name='create_job'),
     path('cookie/', views.csrf_cookie, name='csrf_cookie'),
 ]
