@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.core import serializers
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .models import *
@@ -8,18 +9,25 @@ import json
 # Create your views here.
 
 def job(request):
-    data = json.loads(request.body.decode('utf-8'))
+    if request.method == 'GET':
+        all_job = Job.objects.all()
+        data_job = [{"채용공고_id": job.id, "회사명": job.company.name, "국가": job.company.country, "지역": job.company.region, "채용포지션": job.position, "채용보상금": job.reward, "사용기술": job.technology} for job in all_job]
 
-    company_id = data.get('회사_id')
-    position = data.get('채용포지션')
-    reward = data.get('채용보상금')
-    content = data.get('채용내용')
-    technology = data.get('사용기술')
+        return JsonResponse(data_job, safe=False)
 
-    job = Job(company_id=company_id, position=position, reward=reward, content=content, technology=technology)
-    job.save()
+    elif request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
 
-    return JsonResponse({'data': 'job posted!'}, status=201)
+        company_id = data.get('회사_id')
+        position = data.get('채용포지션')
+        reward = data.get('채용보상금')
+        content = data.get('채용내용')
+        technology = data.get('사용기술')
+
+        job = Job(company_id=company_id, position=position, reward=reward, content=content, technology=technology)
+        job.save()
+
+        return JsonResponse({'data': 'job posted!'}, status=201)
 
 def job_id(request, id):
     if request.method == 'PUT':
