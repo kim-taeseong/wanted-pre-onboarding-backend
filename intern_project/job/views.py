@@ -7,7 +7,7 @@ from .models import *
 import json
 # Create your views here.
 
-def create_job(request):
+def job(request):
     data = json.loads(request.body.decode('utf-8'))
 
     company_id = data.get('회사_id')
