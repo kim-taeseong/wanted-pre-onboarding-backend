@@ -33,6 +33,12 @@ def job_id(request, id):
 
         return JsonResponse({'data': 'job updated!'}, status=200)
 
+    elif request.method == 'DELETE':
+        job = Job.objects.get(id=id)
+        job.delete()
+
+        return JsonResponse({'data': 'job deleted!'}, status=204)
+
 @ensure_csrf_cookie
 def csrf_cookie(request):
     msg = {'data': 'csrf cookie created'}
