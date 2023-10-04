@@ -8,14 +8,17 @@ import json
 # Create your views here.
 
 def create_job(request):
-    company_id = request.POST.get('회사_id')
-    position = request.POST.get('채용포지션')
-    reward = request.POST.get('채용보상금')
-    content = request.POST.get('채용내용')
-    technology = request.POST.get('사용기술')
+    data = json.loads(request.body.decode('utf-8'))
+
+    company_id = data.get('회사_id')
+    position = data.get('채용포지션')
+    reward = data.get('채용보상금')
+    content = data.get('채용내용')
+    technology = data.get('사용기술')
 
     job = Job(company_id=company_id, position=position, reward=reward, content=content, technology=technology)
     job.save()
+
     return JsonResponse({'data': 'job posted!'}, status=201)
 
 def job_id(request, id):
