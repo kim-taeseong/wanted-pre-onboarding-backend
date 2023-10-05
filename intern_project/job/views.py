@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
+from django.db.models import Q
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .models import *
@@ -10,10 +11,19 @@ import json
 
 def job(request):
     if request.method == 'GET':
-        all_job = Job.objects.all()
-        data_job = [{"채용공고_id": job.id, "회사명": job.company.name, "국가": job.company.country, "지역": job.company.region, "채용포지션": job.position, "채용보상금": job.reward, "사용기술": job.technology} for job in all_job]
+        search = request.GET.get('search')
 
-        return JsonResponse(data_job, safe=False)
+        if search:
+            filter_job = Job.objects.filter(Q(company__name__icontains=search) | Q(position__icontains=search) | Q(reward__icontains=search) | Q(content__icontains=search) | Q(technology__icontains=search))
+            data_job = [{"채용공고_id": job.id, "회사명": job.company.name, "국가": job.company.country, "지역": job.company.region, "채용포지션": job.position, "채용보상금": job.reward, "사용기술": job.technology} for job in filter_job]
+
+            return JsonResponse(data_job, safe=False)
+
+        else:
+            all_job = Job.objects.all()
+            data_job = [{"채용공고_id": job.id, "회사명": job.company.name, "국가": job.company.country, "지역": job.company.region, "채용포지션": job.position, "채용보상금": job.reward, "사용기술": job.technology} for job in all_job]
+
+            return JsonResponse(data_job, safe=False)
 
     elif request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
