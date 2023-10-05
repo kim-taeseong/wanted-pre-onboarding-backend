@@ -16,6 +16,6 @@ class CompanyAdmin(admin.ModelAdmin):
 class JobAdmin(admin.ModelAdmin):
     list_display = ['id', 'company_id', 'position', 'reward', 'content', 'technology']
 
-@admin.register(Applying)
-class ApplyingAdmin(admin.ModelAdmin):
+@admin.register(Application)
+class ApplicationAdmin(admin.ModelAdmin):
     list_display = ['id', 'job_id', 'user_id']

@@ -14,6 +14,6 @@ class Job(models.Model):
     content = models.TextField()
     technology = models.CharField(max_length=100)
 
-class Applying(models.Model):
+class Application(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
