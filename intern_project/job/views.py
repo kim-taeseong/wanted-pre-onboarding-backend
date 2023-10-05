@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
 from django.db.models import Q
+from django.contrib.auth.models import User
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .models import *
@@ -51,7 +52,7 @@ def job_id(request, id):
         data_job = {"채용공고_id": job.id, "회사명": job.company.name, "국가": job.company.country, "지역": job.company.region, "채용포지션": job.position, "채용보상금": job.reward, "사용기술": job.technology, "채용내용": job.content, "회사가올린다른채용공고": other_job}
 
         return JsonResponse(data_job, safe=False)
-    
+
     elif request.method == 'PUT':
         job = Job.objects.get(id=id)
 
@@ -71,6 +72,20 @@ def job_id(request, id):
         job.delete()
 
         return JsonResponse({'data': 'job deleted!'}, status=204)
+
+def application(request):
+    data = json.loads(request.body.decode('utf-8'))
+    
+    job_id = data.get('채용공고_id')
+    user_id = data.get('사용자_id')
+
+    temp_application = Application.objects.filter(user_id=user_id).filter(job_id=job_id)
+    if temp_application:
+        return JsonResponse({'data': '이미 지원한 공고입니다.'}, status=409)
+
+    application_data = Application(user_id=user_id, job_id=job_id)
+    application_data.save()
+    return JsonResponse({'data': 'Ok'}, status=201)
 
 @ensure_csrf_cookie
 def csrf_cookie(request):
