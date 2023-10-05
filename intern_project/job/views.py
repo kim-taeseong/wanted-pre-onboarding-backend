@@ -40,7 +40,19 @@ def job(request):
         return JsonResponse({'data': 'job posted!'}, status=201)
 
 def job_id(request, id):
-    if request.method == 'PUT':
+    if request.method == 'GET':
+        job = Job.objects.get(id=id)
+        company_job = Job.objects.filter(company_id=job.company.id)
+        other_job = []
+        for temp_job in company_job:
+            if temp_job.id == job.id:
+                continue
+            other_job.append(temp_job.id)
+        data_job = {"채용공고_id": job.id, "회사명": job.company.name, "국가": job.company.country, "지역": job.company.region, "채용포지션": job.position, "채용보상금": job.reward, "사용기술": job.technology, "채용내용": job.content, "회사가올린다른채용공고": other_job}
+
+        return JsonResponse(data_job, safe=False)
+    
+    elif request.method == 'PUT':
         job = Job.objects.get(id=id)
 
         data = json.loads(request.body.decode('utf-8'))
